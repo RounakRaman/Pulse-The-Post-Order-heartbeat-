@@ -108,7 +108,7 @@ ORDER = {
 st.markdown(f"""
 <div class="pop-header">
     <div class="pop-badge">PULSE</div>
-    <h1>Post-Order Trust Layer — Prototype</h1>
+    <h1>Post-Order Trust Layer Prototype</h1>
     <p>Scenario A: Delayed order, no communication · simulating trigger logic → user messaging → resolution path → feedback loop</p>
 </div>
 """, unsafe_allow_html=True)
@@ -144,7 +144,7 @@ with st.sidebar:
         st.session_state.user_disputes_delivery = st.checkbox(
             "🙅 User says: \"I never received this\"",
             value=st.session_state.user_disputes_delivery,
-            help="Simulates the courier marking delivered while the user disputes it — a common real-world WISMO case the original prototype didn't model."
+            help="Simulates the courier marking delivered while the user disputes it, a common real-world WISMO case the original prototype didn't model."
         )
 
     if st.session_state.courier_status in ("In transit", "Out for delivery", "Exception / stuck") and st.session_state.hours_late > 4:
@@ -153,7 +153,7 @@ with st.sidebar:
             ["None / on time", "Weather disruption", "Courier exception", "Address issue", "Warehouse dispatch delay"],
             index=["None / on time", "Weather disruption", "Courier exception", "Address issue", "Warehouse dispatch delay"].index(st.session_state.delay_reason)
             if st.session_state.delay_reason in ["None / on time", "Weather disruption", "Courier exception", "Address issue", "Warehouse dispatch delay"] else 0,
-            help="Tailors the message copy and gets logged for root-cause analytics — not shown to the user as raw text, just used to write the right message."
+            help="Tailors the message copy and gets logged for root-cause analytics not shown to the user as raw text, just used to write the right message."
         )
 
     st.markdown("---")
@@ -187,8 +187,8 @@ def evaluate_trigger():
         dispute it. A dispute routes to its own "delivery_dispute" state,
         which is treated with the same urgency as "critical" since the
         package may be lost, stolen, or misdelivered.
-      - NEW: recovery is possible — this function is stateless and re-evaluates
-        from current signals every render, so a previously-critical order that
+      - NEW: recovery is possible, this function is stateless and re-evaluates
+        from current signals every render, so a previously critical order that
         starts scanning again naturally falls back to a lower-severity state
         without any special-casing required.
     """
@@ -240,7 +240,7 @@ with left:
         st.markdown('<span class="tag-crit">DELIVERY DISPUTE</span>', unsafe_allow_html=True)
         st.write(
             "Courier marked **Delivered**, but the user says they never received it. "
-            "Treated with the same urgency as a critical delay — package may be lost, "
+            "Treated with the same urgency as a critical delay, package may be lost, "
             "stolen, or misdelivered. **Not** treated as resolved."
         )
     elif state == "on_track":
@@ -248,28 +248,28 @@ with left:
         st.write(f"Within promised window. {abs(hours_late)}h remaining before deadline.")
     elif state == "grace_period":
         st.markdown('<span class="tag-soft">GRACE PERIOD</span>', unsafe_allow_html=True)
-        st.write(f"{hours_late}h past promised window — inside the 4h grace buffer. **No message sent.** Avoids false alarms from last-mile noise.")
+        st.write(f"{hours_late}h past promised window inside the 4h grace buffer. **No message sent.** Avoids false alarms from last-mile noise.")
     elif state == "suppressed_progressing":
         st.markdown('<span class="tag-soft">SUPPRESSED</span>', unsafe_allow_html=True)
         st.write(
             f"{hours_late}h late, but courier shows **Out for delivery** with a scan "
-            f"{scan_age} min ago (< 2h). Trigger suppressed — order is actively progressing."
+            f"{scan_age} min ago (< 2h). Trigger suppressed, order is actively progressing."
         )
     elif state == "soft":
         st.markdown('<span class="tag-warn">SOFT NUDGE</span>', unsafe_allow_html=True)
         st.write(f"{hours_late}h late. Past grace period. Soft, self-serve nudge triggered.")
     elif state == "alert":
         st.markdown('<span class="tag-warn">WISMO-STYLE ALERT</span>', unsafe_allow_html=True)
-        st.write(f"{hours_late}h late. This is the threshold that, left unhandled, becomes a 'Where is my order' ticket — Task 1's diagnosis target.")
+        st.write(f"{hours_late}h late. This is the threshold that, left unhandled, becomes a 'Where is my order' ticket.")
     elif state == "critical":
         st.markdown('<span class="tag-crit">RESOLUTION OFFER</span>', unsafe_allow_html=True)
         if reason == "stuck_scan":
-            st.write("Courier status is **Exception / stuck** — escalating regardless of elapsed hours.")
+            st.write("Courier status is **Exception / stuck**, escalating regardless of elapsed hours.")
         else:
-            st.write(f"{hours_late}h late. Crossed the resolution threshold — system now offers a concrete choice, not just an apology.")
+            st.write(f"{hours_late}h late. Crossed the resolution threshold, system now offers a concrete choice, not just an apology.")
         st.caption(
             "**Recovery path:** if the courier resumes scanning (sidebar button), this order "
-            "re-evaluates down to a lower-severity state on the next render — escalation is "
+            "re-evaluates down to a lower-severity state on the next render, escalation is "
             "not one-directional."
         )
 
@@ -299,19 +299,19 @@ with right:
         <div class="status-card">
             <b>{ORDER['item']}</b><br>
             <span class="small-muted">Order {ORDER['id']}</span><br><br>
-            { "✅ Delivered" if state=="delivered" else f"🚚 On the way — arriving by {ORDER['promised_by']}" }
+            { "✅ Delivered" if state=="delivered" else f"🚚 On the way, arriving by {ORDER['promised_by']}" }
         </div>
         """, unsafe_allow_html=True)
         if state == "suppressed_progressing":
-            st.caption("No proactive message shown — the order is moving, so silence here is correct, not a gap.")
+            st.caption("No proactive message shown, the order is moving, so silence here is correct, not a gap.")
 
     elif state == "delivery_dispute":
         st.markdown(f"""
         <div class="dark-card">
-            <b>Let's sort this out — we'll make it right</b><br><br>
+            <b>Let's sort this out, we'll make it right</b><br><br>
             <span style="color:#C9C9CC;font-size:13px;">{ORDER['item']} · Order {ORDER['id']}</span><br><br>
             Our records show this was delivered, but you've told us it didn't arrive. We're not
-            asking you to prove anything right now — we're opening an investigation with the
+            asking you to prove anything right now. We're opening an investigation with the
             carrier and protecting your order in the meantime.
         </div>
         """, unsafe_allow_html=True)
@@ -335,14 +335,14 @@ with right:
         st.button("Track order")
 
     elif state == "alert":
-        reason_clause = f" — {REASON_COPY[st.session_state.delay_reason]}" if st.session_state.delay_reason in REASON_COPY else ""
+        reason_clause = f" {REASON_COPY[st.session_state.delay_reason]}" if st.session_state.delay_reason in REASON_COPY else ""
         st.markdown(f"""
         <div class="status-card">
-            <b>Your order is taking longer than expected — here's what's happening</b><br><br>
+            <b>Your order is taking longer than expected, here's what's happening</b><br><br>
             <span class="small-muted">{ORDER['item']} · Order {ORDER['id']}</span><br><br>
             It's been <b>{hours_late} hours</b> past the promised window{reason_clause}. Last known status: <b>{status}</b>
             ({scan_age} min ago).<br>
-            Revised estimate: <b>likely today</b> — we'll update you the moment that changes.
+            Revised estimate: <b>likely today</b> We'll update you the moment that changes.
         </div>
         """, unsafe_allow_html=True)
         c1, c2 = st.columns(2)
@@ -357,7 +357,7 @@ with right:
             body = "No courier update in a while and the carrier flagged an exception. We've escalated this internally."
         else:
             reason_clause = f" — {REASON_COPY[st.session_state.delay_reason]}" if st.session_state.delay_reason in REASON_COPY else ""
-            headline = "This has gone on too long — let's fix it"
+            headline = "This has gone on too long, let's fix it"
             body = f"Your order is {hours_late} hours past the promised window{reason_clause}. We'd rather resolve this than keep asking you to wait."
 
         st.markdown(f"""
@@ -372,7 +372,7 @@ with right:
             mins_left = st.session_state.sla_minutes_remaining
             bar_pct = max(0, min(100, int((mins_left / 30) * 100)))
             st.markdown(f"""
-            <div class="small-muted">⏱ Respond within <b>{mins_left} min</b> or we'll automatically issue a delay credit and keep the order moving — no action needed if you'd rather not choose.</div>
+            <div class="small-muted">⏱ Respond within <b>{mins_left} min</b> or we'll automatically issue a delay credit and keep the order moving, no action needed if you'd rather not choose.</div>
             """, unsafe_allow_html=True)
             st.progress(bar_pct / 100)
             st.session_state.sla_minutes_remaining = st.slider(
@@ -383,21 +383,21 @@ with right:
         st.write("**Choose how you'd like to resolve this:**")
         choice = st.radio(
             "Resolution",
-            ["Wait — and get a delivery-delay credit", "Cancel for an instant refund"],
+            ["Wait and get a delivery-delay credit", "Cancel for an instant refund"],
             index=None,
             label_visibility="collapsed",
         )
         if choice:
             st.session_state.resolution_choice = choice
-            st.success(f"Logged: \"{choice}\" — this is now attached to the order. Support will see this choice automatically and won't ask you to repeat it.")
+            st.success(f"Logged: \"{choice}\", this is now attached to the order. Support will see this choice automatically and won't ask you to repeat it.")
         elif st.session_state.sla_minutes_remaining == 0 and not st.session_state.escalated:
-            st.session_state.resolution_choice = "Auto-resolved — delivery-delay credit (SLA timeout)"
+            st.session_state.resolution_choice = "Auto-resolved, delivery-delay credit (SLA timeout)"
             st.session_state.escalated = True
-            st.warning("SLA expired with no response. Auto-resolved with a delay credit and escalated to ops with full context — no manual handoff needed.")
+            st.warning("SLA expired with no response. Auto-resolved with a delay credit and escalated to ops with full context, no manual handoff needed.")
 
         if st.session_state.resolution_choice and not st.session_state.feedback_submitted:
             st.markdown("---")
-            st.write("**Quick one before you go — was this handled well?**")
+            st.write("**Quick one before you go, was this handled well?**")
             fb_cols = st.columns(3)
             with fb_cols[0]:
                 if st.button("👍 Yes"):
@@ -415,12 +415,12 @@ with right:
         if st.session_state.feedback_submitted:
             label = {
                 "positive": "👍 Marked as well-handled",
-                "negative": "👎 Marked as poorly-handled — flagged for support review",
+                "negative": "👎 Marked as poorly-handled, flagged for support review",
                 "neutral": "😐 Marked as neutral",
             }[st.session_state.feedback_submitted]
             st.markdown(f"""
             <div class="green-card">
-                <b>Thanks — feedback logged.</b><br>
+                <b>Thanks, feedback logged.</b><br>
                 <span class="small-muted">{label}. This closes the loop: resolution outcome, delay reason, and
                 satisfaction are all attached to order {ORDER['id']} for the post-incident metric, not just the ticket.</span>
             </div>
@@ -434,10 +434,9 @@ with right:
 # Footer — ties back to the written diagnosis
 # --------------------------------------------------------------------------------------
 st.markdown("---")
-with st.expander("Why this scenario, and what's deliberately not built — see full reasoning"):
+with st.expander("Why this scenario, and what's deliberately not built, see full reasoning"):
     st.markdown("""
-**Diagnosis (Task 1):** WISMO is 34% of tickets, but most of it is a *communication* gap, not a *delivery* gap —
-the order is fine, the user just isn't told anything. This prototype simulates the fix: a trigger that fires on
+**Diagnosis (Task 1):** WISMO is 34% of tickets, but most of it is a *communication* gap, not a *delivery* gap, the order is fine, the user just isn't told anything. This prototype simulates the fix: a trigger that fires on
 real signal (elapsed time + courier state + delivery confirmation), not a single deadline, so it neither stays
 silent too long nor fires false alarms.
 
@@ -446,20 +445,20 @@ silent too long nor fires false alarms.
   fact, and treating them as the same fact is exactly the kind of silent gap this tool exists to close.
 - Recovery: severity is re-evaluated from live signal every render, so a stuck order that starts moving again
   naturally de-escalates instead of staying flagged as critical forever.
-- A visible SLA countdown with a real auto-resolution behavior, instead of a manual "simulate timeout" button —
+- A visible SLA countdown with a real auto-resolution behavior, instead of a manual "simulate timeout" button,
   this is what actually builds trust: the user can see the clock, not just be told one exists.
-- Delay reason codes that tailor the message and get logged — this is the seed of root-cause analytics
+- Delay reason codes that tailor the message and get logged, this is the seed of root-cause analytics
   (which carrier, which lane, which failure mode is driving WISMO volume) without overbuilding it.
-- A two-tap feedback capture after resolution — cheap to build, and it's the difference between shipping a flow
+- A two-tap feedback capture after resolution, cheap to build, and it's the difference between shipping a flow
   and shipping a flow you can prove is working.
 
 **Still not built in this prototype (and not in v1, deliberately):**
-- Predictive delay detection *before* the window is breached (Task 3's AI opportunity) — this prototype is
+- Predictive delay detection *before* the window is breached (Task 3's AI opportunity), this prototype is
   the deterministic v1 + dispute/recovery/feedback layer; prediction is a v2.5/v3 layer once the reactive
   trigger and feedback loop are proven in production.
 - Compensation tiers beyond a flat delay credit, and any tuning of the credit amount by order value.
 - Multi-language message variants.
 
-The goal of this version is still to never leave a user silently waiting — and now also to never let a
+The goal of this version is still to never leave a user silently waiting and now also to never let a
 "resolved" ticket close without knowing whether it was actually resolved well.
 """)
